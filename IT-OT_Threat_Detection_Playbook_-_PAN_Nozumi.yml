@@ -1,0 +1,1977 @@
+id: 1710234d-6e3b-4992-8300-6c52a96cc630
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: IT-OT Threat Detection Playbook - PAN Nozumi
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d2b2cc36-152b-4ad3-89d6-06a5060799ce
+    type: start
+    task:
+      id: d2b2cc36-152b-4ad3-89d6-06a5060799ce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "6"
+      - "17"
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d9fca320-8e88-400c-86df-4e2c4e14b3a9
+    type: title
+    task:
+      id: d9fca320-8e88-400c-86df-4e2c4e14b3a9
+      version: -1
+      name: Validate File Sample
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ba822d37-d857-4c36-86f2-d01119f47842
+    type: regular
+    task:
+      id: ba822d37-d857-4c36-86f2-d01119f47842
+      version: -1
+      name: Extract indicators from PCAP
+      description: This automation extracts all possible files from a PCAP file.
+      scriptName: PcapFileExtractor
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      entry_id:
+        simple: ${incident.pcapfile}
+      extensions: {}
+      inclusive_or_exclusive: {}
+      limit: {}
+      rsa_decrypt_key_entry_id: {}
+      types: {}
+      wpa_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 351f9eb8-8e2f-4165-88bd-55e80099f80c
+    type: title
+    task:
+      id: 351f9eb8-8e2f-4165-88bd-55e80099f80c
+      version: -1
+      name: Host and IP  Information Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 191ae312-66ef-4a6f-8a24-a2b42b49df7e
+    type: title
+    task:
+      id: 191ae312-66ef-4a6f-8a24-a2b42b49df7e
+      version: -1
+      name: User information Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 0ed68f8a-c292-4758-8355-b1711a54a52c
+    type: condition
+    task:
+      id: 0ed68f8a-c292-4758-8355-b1711a54a52c
+      version: -1
+      name: Username available?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.user
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 54d5be7b-fce9-4886-8bce-5bea7b99c082
+    type: regular
+    task:
+      id: 54d5be7b-fce9-4886-8bce-5bea7b99c082
+      version: -1
+      name: User of the source
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name:
+        complex:
+          root: ${incident
+          accessor: user}
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: ${incident.sourceusername}
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 31ea13ed-306e-4827-8c77-8b0ec0598b5a
+    type: regular
+    task:
+      id: 31ea13ed-306e-4827-8c77-8b0ec0598b5a
+      version: -1
+      name: Is malicious
+      description: Checks if the investigation found any malicious indicators (file,
+        URL, IP address, domain, or email). Returns "yes" if at least one malicious
+        indicator is found.
+      scriptName: IsMaliciousIndicatorFound
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "20"
+    scriptarguments:
+      includeManual:
+        simple: "yes"
+      includeSuspicious:
+        simple: "yes"
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 934078c4-7cb8-47d7-8eb4-9c7d7386286a
+    type: regular
+    task:
+      id: 934078c4-7cb8-47d7-8eb4-9c7d7386286a
+      version: -1
+      name: Related Incidents reported from OT or IT environment
+      description: |-
+        Find duplicate incidents candidates.
+        Using machine learning techniques with pre-defined data (can also use data from the local environment), this script takes into consideration different features such as: labels comparison, email labels (relevant for phishing), incident time difference and shared indicators, which can be customized by the arguments.
+      scriptName: GetDuplicatesMlv2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      UseLocalEnvDuplicatesInLastDays: {}
+      compareEmailLabels: {}
+      compareIncidentTimeDiff: {}
+      compareIndicators: {}
+      compareOtherLabels: {}
+      ignoreClosedIncidents:
+        simple: "yes"
+      ipComparisonSubnetMask: {}
+      maxNumberOfIncidents: {}
+      maxResults:
+        simple: "20"
+      threshold:
+        simple: "0.8"
+      timeField: {}
+      timeFrameHours:
+        simple: "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: d02e1a3e-5516-4a39-8ee5-2734b59ff58c
+    type: title
+    task:
+      id: d02e1a3e-5516-4a39-8ee5-2734b59ff58c
+      version: -1
+      name: URL information Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: f137a964-4494-4c2d-8676-ba1b3a13a40a
+    type: condition
+    task:
+      id: f137a964-4494-4c2d-8676-ba1b3a13a40a
+      version: -1
+      name: URL information available?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: bb6d099e-a435-4373-81be-e6c0e306a554
+    type: regular
+    task:
+      id: bb6d099e-a435-4373-81be-e6c0e306a554
+      version: -1
+      name: URLs
+      description: Gets a URL category from URL Filtering.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        complex:
+          root: incident.labels
+          accessor: url
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 963bdb1e-47a1-4dec-8f49-0c69eeff2a5b
+    type: title
+    task:
+      id: 963bdb1e-47a1-4dec-8f49-0c69eeff2a5b
+      version: -1
+      name: Block indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 96a6985a-8508-4ca7-81df-bc0aab782539
+    type: playbook
+    task:
+      id: 96a6985a-8508-4ca7-81df-bc0aab782539
+      version: -1
+      name: Isolate Endpoint - Generic
+      description: |-
+        This playbook isolates a given endpoint using the following integrations:
+        - Carbon Black Enterprise Response
+        - Palo Alto Networks Traps
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      EndpointId: {}
+      Hostname:
+        simple: ${IP} ${incident.srchostname}
+      xdr_endpoint_id: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 8e4f7381-0080-4b60-8445-ff56e447a919
+    type: title
+    task:
+      id: 8e4f7381-0080-4b60-8445-ff56e447a919
+      version: -1
+      name: Endpoint Isolation decison
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 2bb5d71f-37f0-4a0f-808b-b116bd76a4e1
+    type: condition
+    task:
+      id: 2bb5d71f-37f0-4a0f-808b-b116bd76a4e1
+      version: -1
+      name: Is there an endpoint to isolate?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "30"
+      "Yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User/Host Containment action recommended by Analyst.Answers.2
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User/Host Containment action recommended by Analyst.Answers.2
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 1b39c0f0-e98d-4a12-8f0c-108ee579d8d0
+    type: title
+    task:
+      id: 1b39c0f0-e98d-4a12-8f0c-108ee579d8d0
+      version: -1
+      name: Notify endpoint user-manager-SD
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: f7fdddf7-fd97-401b-80c8-5fc3b176a76e
+    type: regular
+    task:
+      id: f7fdddf7-fd97-401b-80c8-5fc3b176a76e
+      version: -1
+      name: Endpoint Isolation - Notify Manager
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: " Hi ${Account.Manager}\n\nWe identified unexpected activity on one
+          of your team members account ${Account.Username}\n\nStarting on ${incident.occurred},
+          there were suspicious activity from the ${incident.src} IP address.\n\nPlease
+          confirm whether or not you recognize this activity.\nReply \"Yes\" to confirm
+          this activity. \nReply \"No\" otherwise.\n\nThis endpoint has been temporarily
+          isolated until security investigation is completed and IT service desk restore
+          the last known good back up\n\nRegards,\nYour friendly security team."
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Endpoint isolated due to security incident ${incident.id}
+      templateParams: {}
+      to:
+        simple: IT.servicedesk@nttapdemo.com ${ActiveDirectory.Users.mail}${UserManagerEmail}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 972.5,
+          "y": 2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 4600688c-76ce-4dc3-8344-15185b52af34
+    type: title
+    task:
+      id: 4600688c-76ce-4dc3-8344-15185b52af34
+      version: -1
+      name: Block user
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 165,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 65aa6598-4233-4aa6-82d9-9bcf0112676d
+    type: playbook
+    task:
+      id: 65aa6598-4233-4aa6-82d9-9bcf0112676d
+      version: -1
+      name: Block Indicators - Generic
+      description: |
+        Deprecated - We recommend using the 'Block Indicators - Generic v2' playbook instead.
+        This playbook blocks malicious indicators using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * Check Point Firewall
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks Panorama
+        * Zscaler
+        * Carbon Black Enterprise Response
+      playbookName: Block Indicators - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 916dcdeb-3d6b-4cdb-8ee6-cc7ed3c4a99d
+    type: title
+    task:
+      id: 916dcdeb-3d6b-4cdb-8ee6-cc7ed3c4a99d
+      version: -1
+      name: Review on going suspicious/malicious activities and confirm eradication/recovery
+        steps
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 2875
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: b493c3d9-6fb6-4554-885c-9bc4d3c82c61
+    type: collection
+    task:
+      id: b493c3d9-6fb6-4554-885c-9bc4d3c82c61
+      version: -1
+      name: eradication/Recovery
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 3025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: {}
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: After investigation and taking remediation actions, Is it safe to
+            add the device ${incident.labels.src_ip} back on to network and unblock
+            user ${Account.Username}?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Remediation activities are successful?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: c59adb15-9c43-4f84-8791-d01712eb0500
+    type: regular
+    task:
+      id: c59adb15-9c43-4f84-8791-d01712eb0500
+      version: -1
+      name: IP reputation
+      description: A context script for IP entities
+      scriptName: IPReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ip:
+        complex:
+          root: ${incident.labels
+          accessor: dest_ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 2425efe9-706f-495c-8aff-7a5f67ed83b3
+    type: collection
+    task:
+      id: 2425efe9-706f-495c-8aff-7a5f67ed83b3
+      version: -1
+      name: User/Host Containment action recommended by Analyst
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "23"
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Does the  OT incidents related to ${incident.id} generated by Nozumi
+            warrants action to be taken to protect OT assets
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Does the malware incident in IT environment had an impact on OT environment
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Does the related incidents to ${incident.id} / trends or current
+            on-going activities by  ${Account.Username} warrants a temporary deactivation
+            of the AD account?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Evaluate criticality of current incident and the possibility of user
+          account privileges used for propagation of malware
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Does the evidence/incident trends/on-going activities warrants endpoint
+            isolation
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Do you see on--going activities that could further harm to network
+          generating from the host, such as scans, account attacks
+        readonly: false
+      title: User/Host Containment action recommended by Analyst
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 9e398e8d-613b-4515-8095-6f2f673a10f9
+    type: condition
+    task:
+      id: 9e398e8d-613b-4515-8095-6f2f673a10f9
+      version: -1
+      name: Block user account?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "30"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User/Host Containment action recommended by Analyst.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User/Host Containment action recommended by Analyst.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 165,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: e0913b3e-0aff-4df5-81a0-fce065778b84
+    type: title
+    task:
+      id: e0913b3e-0aff-4df5-81a0-fce065778b84
+      version: -1
+      name: Notify account  user-manager-SD
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 165,
+          "y": 2225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: ca82eb28-5ab1-4cff-8e34-81300586432a
+    type: regular
+    task:
+      id: ca82eb28-5ab1-4cff-8e34-81300586432a
+      version: -1
+      name: Account Block - Notify Manager
+      description: Send an email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: " Hi ${Account.Manager}\n\nWe identified unexpected activity on one
+          of your team members account ${Account.Username}\n\nStarting on ${incident.occurred},
+          there were suspicious activity from the ${incident.src} IP address.\n\nPlease
+          confirm whether or not you recognize this activity.\nReply \"Yes\" to confirm
+          this activity. \nReply \"No\" otherwise.\n\nThis account has been temporarily
+          disabled until security investigation is completed.\n\nRegards,\nYour friendly
+          security team."
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: it.servicedesk@nttapdemo.com ${ActiveDirectory.Users.mail}${UserManagerEmail}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 165,
+          "y": 2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: a0fab6cf-11eb-4fc2-80a6-9e72be5da9f4
+    type: title
+    task:
+      id: a0fab6cf-11eb-4fc2-80a6-9e72be5da9f4
+      version: -1
+      name: OT environment investigation and Remediation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: ed73b273-f3d0-4e8d-881f-758f9af26683
+    type: regular
+    task:
+      id: ed73b273-f3d0-4e8d-881f-758f9af26683
+      version: -1
+      name: Nozumi event Driven Threat Hunt
+      description: |-
+        Can execute a nozomi query to get all the information you want.
+        A query can be something like that: "alerts | select id name status ack | where status == open"
+        Take a look to n2os manual to know how to do a query.
+      script: Nozomi Networks|||nozomi-query
+      type: regular
+      iscommand: true
+      brand: Nozomi Networks
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      extend-context:
+        simple: OT_Alerts=
+      query:
+        simple: alerts|head
+      using:
+        simple: Nozomi Networks_instance_1
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 1535
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Nozumi_Alerts
+      output:
+        simple: ${Nozomi.Query.Result}
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 0fa1013b-2564-4f76-8ec4-e58c251b8ee3
+    type: regular
+    task:
+      id: 0fa1013b-2564-4f76-8ec4-e58c251b8ee3
+      version: -1
+      name: Incident Closure
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 9f64a4db-a2fa-4007-8e7d-67ed57dfce66
+    type: title
+    task:
+      id: 9f64a4db-a2fa-4007-8e7d-67ed57dfce66
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: a8e7de6d-a36a-4919-8225-94471c5659fa
+    type: collection
+    task:
+      id: a8e7de6d-a36a-4919-8225-94471c5659fa
+      version: -1
+      name: Containment and Impact mitigation actions in OT environment
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 1705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Does the impact of incident ${incident.id} to OT environment requires
+            a containment plan or an impact mitigation plan
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: OT incident investigation outcomes
+      description: Outcome of OT investigation via Nozumi and other available resources
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 1758bb3d-abab-4fea-88d2-174a90d04a6a
+    type: title
+    task:
+      id: 1758bb3d-abab-4fea-88d2-174a90d04a6a
+      version: -1
+      name: Notify OT management team
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 9d72d4ff-802f-4bc0-8d82-a519c748108d
+    type: regular
+    task:
+      id: 9d72d4ff-802f-4bc0-8d82-a519c748108d
+      version: -1
+      name: OT Impact notification
+      description: Send an email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: "Investigation of incident ${incident.id} uncovered some impact on
+          OT environment. \n\n${OT impact assessment.Answers.0}"
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: OT environment impact assessment - ${indcident.id}
+      templateParams: {}
+      to:
+        simple: ot.management@nttapdemo.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 77afbbf7-1359-44b8-872e-7f5367358652
+    type: condition
+    task:
+      id: 77afbbf7-1359-44b8-872e-7f5367358652
+      version: -1
+      name: Impact to OT environment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "30"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: OT incident investigation outcomes.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OT incident investigation outcomes.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: b1e04d0b-eceb-4918-84aa-9c7c41fdded4
+    type: collection
+    task:
+      id: b1e04d0b-eceb-4918-84aa-9c7c41fdded4
+      version: -1
+      name: Impact statement for OT environment
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 2045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the identified impact for OT environment by incident ${incident.id}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: OT impact assessment
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: b4f63942-13b2-414c-8534-9f5d15760330
+    type: collection
+    task:
+      id: b4f63942-13b2-414c-8534-9f5d15760330
+      version: -1
+      name: Continue with remediation activities
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 3630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Remediation activities successful?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Remediation activities successful?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 7df6c659-9dec-4e37-8860-e404f6928ae5
+    type: condition
+    task:
+      id: 7df6c659-9dec-4e37-8860-e404f6928ae5
+      version: -1
+      name: Remediation activities successful?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "54"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Remediation activities successful?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Remediation activities successful?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 6737e07c-cb5b-4618-8719-08f78c5e85a5
+    type: title
+    task:
+      id: 6737e07c-cb5b-4618-8719-08f78c5e85a5
+      version: -1
+      name: Escalate to Major Incident team
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 4c4dd243-43eb-472e-83a2-9a8df78c06f2
+    type: regular
+    task:
+      id: 4c4dd243-43eb-472e-83a2-9a8df78c06f2
+      version: -1
+      name: Send Notification to Major Incident team
+      description: Send an email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: Actions taken to remediate incident ${incident.id} have only been
+          partially successful, we would like to bring this to your attention and
+          request an escalation to this incident
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'persistent malicious behavior continues from devices/user accounts
+          involved in ${incident.id}  '
+      templateParams: {}
+      to:
+        simple: major.incident@nttapdemo.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: db89378a-6a04-453a-8523-fbafdd522730
+    type: regular
+    task:
+      id: db89378a-6a04-453a-8523-fbafdd522730
+      version: -1
+      name: ad-disable-account
+      description: Disables an Active Directory user account.
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      base-dn: {}
+      username:
+        complex:
+          root: incident
+          accessor: user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 165,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 6d6d4368-838a-464b-8d27-edf99f9a60e9
+    type: condition
+    task:
+      id: 6d6d4368-838a-464b-8d27-edf99f9a60e9
+      version: -1
+      name: PCAP available
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      else:
+      - "30"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: ${incident.labels
+                accessor: pcap_id}
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    - label: else
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${incident.labels
+                accessor: pcap_id}
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 02a6cdec-7299-4151-889a-54382d2a5e77
+    type: condition
+    task:
+      id: 02a6cdec-7299-4151-889a-54382d2a5e77
+      version: -1
+      name: Eradication/Recovery successful?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Remediation activities are successful?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: else
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Remediation activities are successful?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 54c824e8-0198-456c-81b5-83bb8fbc0991
+    type: regular
+    task:
+      id: 54c824e8-0198-456c-81b5-83bb8fbc0991
+      version: -1
+      name: Notify stakeholders of the incident about recurring related activities
+      description: Send an email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject: {}
+      templateParams: {}
+      to:
+        simple: it.servicedesk@nttapdemo.com ot.managment@nttapdemo.com ${ActiveDirectory.Users.mail}${UserManagerEmail}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 36ce0dd2-d051-482f-82a8-9f7bbf8a5392
+    type: playbook
+    task:
+      id: 36ce0dd2-d051-482f-82a8-9f7bbf8a5392
+      version: -1
+      name: Active Directory - Get User Manager Details
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "24_30_No": 0.22,
+      "37_30_No": 0.35,
+      "50_30_No": 0.21,
+      "53_45_yes": 0.41,
+      "57_30_else": 0.27,
+      "58_45_yes": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4465,
+        "width": 2580,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 7b5e1742-d32a-44e4-82a8-4a332d212ce0
